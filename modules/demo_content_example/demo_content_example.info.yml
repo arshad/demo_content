@@ -7,4 +7,4 @@ dependencies:
   - demo_content
 demo_content:
   - content/file.file.yml
-  - content/node.blog_post.yml
+  - content/node.article.yml
