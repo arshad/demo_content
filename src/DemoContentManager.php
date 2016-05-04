@@ -115,6 +115,7 @@ class DemoContentManager implements DemoContentManagerInterface {
         continue;
       }
 
+      // TODO: Refactor this to a method.
       foreach ($entity_info as $field_name => $field_values) {
 
         // Find entity reference fields and get target_id from uuid.
@@ -146,6 +147,7 @@ class DemoContentManager implements DemoContentManagerInterface {
       $bundle_id = $this->getBundleIdForEntityType($entity_type_id);
       $entity_info[$bundle_id] = $bundle;
 
+      // TODO: Refactor this to a method.
       // Check if entity exists.
       $entity = $this->entityRepository->loadEntityByUuid($entity_type_id, $entity_info['uuid']);
       if (!empty($entity)) {
