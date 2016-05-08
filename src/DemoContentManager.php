@@ -102,7 +102,7 @@ class DemoContentManager implements DemoContentManagerInterface {
 
     // Check if invalid content entity type.
     if (!$this->entityTypeValidator->isContentEntityType($entity_type_id)) {
-      throw new Exception($entity_type_id, sprintf('The "%s" entity type is not a valid content entity.', $entity_type_id));
+      throw new \Exception(sprintf('The "%s" entity type is not a valid content entity.', $entity_type_id));
     }
 
     $content = $content_info['content'];
@@ -110,8 +110,20 @@ class DemoContentManager implements DemoContentManagerInterface {
 
       // Handle files.
       if ($entity_type_id == 'file') {
+        // Check if file exists.
+        $entity = $this->entityRepository->loadEntityByUuid($entity_type_id, $entity_info['uuid']);
+
+        if (!empty($entity)) {
+          // Update the file.
+          $entity = $this->fileManager->update($entity, $entity_info);
+        }
+        else {
+          // Create the file.
+          $entity = $this->fileManager->create($entity_info);
+        }
+
         // Save the file.
-        $entities[] = $this->fileManager->create($entity_info);
+        $entities[] = $entity;
         continue;
       }
 
