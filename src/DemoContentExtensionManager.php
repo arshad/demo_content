@@ -36,8 +36,8 @@ class DemoContentExtensionManager implements DemoContentExtensionManagerInterfac
    */
   public function getExtension(string $name) {
     $extensions = $this->getExtensions();
-    if ($extension = $extensions[$name]) {
-      return $extension;
+    if (isset($extensions[$name])) {
+      return $extensions[$name];
     }
 
     return false;
@@ -66,15 +66,21 @@ class DemoContentExtensionManager implements DemoContentExtensionManagerInterfac
     // Filter demo_content extensions.
     $demo_content_extensions = [];
     foreach ($extensions as $extension_name => $extension) {
-      // Check for demo_content.
-      if (isset($extension->info['demo_content'])) {
-
-        // Add demo_content to info.
-        $extension->info['demo_content'] = $this->getDemoContent($extension);
-
-        // Add to demo_content_extensions.
-        $demo_content_extensions[$extension_name] = $extension;
+      // Continue if extensions is not enabled.
+      if (!$extension->status) {
+        continue;
       }
+
+      // Continue if extension is not demo_content extension.
+      if (!isset($extension->info['demo_content'])) {
+        continue;
+      }
+
+      // Add demo_content to info.
+      $extension->info['demo_content'] = $this->getDemoContent($extension);
+
+      // Add to demo_content_extensions.
+      $demo_content_extensions[$extension_name] = $extension;
     }
 
     // Save to cache.
