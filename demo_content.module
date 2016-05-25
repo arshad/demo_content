@@ -21,25 +21,3 @@ function demo_content_help($route_name, RouteMatchInterface $route_match) {
       break;
   }
 }
-
-/**
- * Implements hook_modules_installed().
- */
-function demo_content_modules_installed($modules) {
-  foreach ($modules as $module) {
-    if (!\Drupal::isConfigSyncing()) {
-      \Drupal::service('demo_content.manager')->importFromExtension($module);
-    }
-  }
-}
-
-/**
- * Implements hook_themes_installed().
- */
-function demo_content_themes_installed($theme_list) {
-  foreach ($theme_list as $theme) {
-    if (!\Drupal::isConfigSyncing()) {
-      \Drupal::service('demo_content.manager')->importFromExtension($theme);
-    }
-  }
-}
