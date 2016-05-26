@@ -6,5 +6,8 @@ version: 8.x-1.0-dev
 dependencies:
   - demo_content
 demo_content:
+  # The article nodes depends on the images, so we import file first.
   - content/file.file.yml
+
+  # Next import the node articles.
   - content/node.article.yml
