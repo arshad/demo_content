@@ -76,12 +76,15 @@ class DemoContentImportForm extends FormBase {
         $entity_type_id = $demo_content['entity_type'];
         $entity_type = \Drupal::service('entity_type.manager')->getDefinition($entity_type_id);
         $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity_type_id);
-        $options[$path] = [
-          'entity_type' => $entity_type->getLabel(),
-          'bundle' => $bundles[$demo_content['bundle']]['label'],
-          'entities' => count($demo_content['content']),
-          'path' => $extension->getPath() . '/' . $path,
-        ];
+
+        if (isset($bundles[$demo_content['bundle']])) {
+          $options[$path] = [
+            'entity_type' => $entity_type->getLabel(),
+            'bundle' => $bundles[$demo_content['bundle']]['label'],
+            'entities' => count($demo_content['content']),
+            'path' => $extension->getPath() . '/' . $path,
+          ];
+        }
       }
 
       $form['demo_content'][$extension->getName()] = [
@@ -99,7 +102,7 @@ class DemoContentImportForm extends FormBase {
     $form['actions']['op'] = [
       '#type' => 'submit',
       '#value' => t('Import'),
-      '#attributes' => ['class' => ['button--primary']],
+      '#button_type' => 'primary',
     ];
 
     return $form;
@@ -111,6 +114,7 @@ class DemoContentImportForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $demo_content = $form_state->getValue('demo_content');
 
+    $content = [];
     foreach ($demo_content as $extension_name => $files) {
       if (isset($this->extensions[$extension_name])) {
         // Filter out empty files.
@@ -118,18 +122,13 @@ class DemoContentImportForm extends FormBase {
 
         foreach ($files as $file) {
           // Get the content values for the demo_content file.
-          $content = $this->extensions[$extension_name]->info['demo_content'][$file];
-
-          // Import entities for each file.
-          $entities = \Drupal::service('demo_content.manager')
-            ->import($content);
-
-          // Show a success message.
-          drupal_set_message(t('@count entities created', [
-            '@count' => count($entities),
-          ]));
+          $content[] = $this->extensions[$extension_name]->info['demo_content'][$file];
         }
       }
     }
+
+    // Set the batch.
+    $function = 'demo_content_batch_import';
+    batch_set($function($content));
   }
 }

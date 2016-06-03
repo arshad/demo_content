@@ -21,3 +21,48 @@ function demo_content_help($route_name, RouteMatchInterface $route_match) {
       break;
   }
 }
+
+/**
+ * Callback for demo content batch import.
+ *
+ * @param $demo_content
+ *  An array of content to import.
+ * @return array
+ *  A batch array.
+ */
+function demo_content_batch_import($demo_content) {
+  // Build operations array.
+  $operations = [];
+  foreach ($demo_content as $content) {
+    $operations[] = ['_demo_content_import', [$content]];
+  }
+
+  // Return batch.
+  return [
+    'title' => t('Importing demo content'),
+    'operations' => $operations,
+    'finished' => 'demo_content_batch_import_finished',
+    'progress_message' => t('Imported @current out of @total.'),
+  ];
+}
+
+/**
+ * Operation callback for demo_content_batch_import.
+ */
+function _demo_content_import($content, &$context) {
+  $entities = \Drupal::service('demo_content.manager')
+    ->import($content);
+  $context['results'] = array_merge($context['results'], $entities);
+}
+
+/**
+ * Finished callback for demo_content_batch_import.
+ */
+function demo_content_batch_import_finished($success, $results, $operations) {
+  // Show a success message.
+  if ($success) {
+    drupal_set_message(t('Successfully imported @count entities.', [
+      '@count' => count($results),
+    ]));
+  }
+}

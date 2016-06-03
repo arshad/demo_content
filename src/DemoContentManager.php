@@ -159,8 +159,8 @@ class DemoContentManager implements DemoContentManagerInterface {
       $bundle_id = $this->getBundleIdForEntityType($entity_type_id);
       $entity_info[$bundle_id] = $bundle;
 
-      // TODO: Refactor this to a method.
       // Check if entity exists.
+      // TODO: Refactor this to a method.
       $entity = $this->entityRepository->loadEntityByUuid($entity_type_id, $entity_info['uuid']);
       if (!empty($entity)) {
         foreach ($entity_info as $key => $value) {
@@ -168,11 +168,12 @@ class DemoContentManager implements DemoContentManagerInterface {
         }
       }
       else {
-      // Create an entity from $content.
-      $entity = $this->entityTypeManager->getStorage($entity_type_id)
-        ->create($entity_info);
+        // Create an entity from $content.
+        $entity = $this->entityTypeManager->getStorage($entity_type_id)
+          ->create($entity_info);
       }
 
+      // Save the entity.
       $entity->save();
 
       if ($entity->id()) {
